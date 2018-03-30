@@ -156,10 +156,10 @@ def training_loop(train_dataloader, opts):
             ################################################
 
             d_optimizer.zero_grad()
-            print(d_optimizer)
+            #print(d_optimizer)
             # FILL THIS IN
             # 1. Compute the discriminator loss on real images
-            D_real_loss = torch.sum(torch.pow(D.forward(real_images)-1, 2)) / (2*opts.batch_size)
+            D_real_loss = torch.sum(torch.pow(D(real_images)-1, 2)) / (2*opts.batch_size)
             # print(D_real_loss)
 
             # 2. Sample noise
@@ -169,12 +169,12 @@ def training_loop(train_dataloader, opts):
             fake_images = G(noise)
 
             # 4. Compute the discriminator loss on the fake images
-            d_fake_loss = torch.sum(torch.pow(D(fake_images), 2))/(2*opts.batch_size)
+            D_fake_loss = torch.sum(torch.pow(D(fake_images), 2))/(2*opts.batch_size)
 
             # 5. Compute the total discriminator loss
-            d_total_loss = D_real_loss + D_fake_loss
+            D_total_loss = D_real_loss + D_fake_loss
 
-            d_total_loss.backward()
+            D_total_loss.backward()
             d_optimizer.step()
 
             ###########################################

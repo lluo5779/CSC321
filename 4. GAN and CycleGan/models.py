@@ -49,10 +49,10 @@ class DCGenerator(nn.Module):
         ##   FILL THIS IN: CREATE ARCHITECTURE   ##
         ###########################################
 
-        self.deconv1 = deconv(100,128,4)
-        self.deconv2 = deconv(128,64,4)
-        self.deconv3 = deconv(64,32,4)
-        self.deconv4 = deconv(32,3,4)
+        self.deconv1 = deconv(noise_size,conv_dim*4,kernel_size=4, padding = 0)
+        self.deconv2 = deconv(conv_dim*4,conv_dim*2,kernel_size=4)
+        self.deconv3 = deconv(conv_dim*2,conv_dim,kernel_size=4)
+        self.deconv4 = deconv(conv_dim,3,kernel_size=4, batch_norm = False)
 
     def forward(self, z):
         """Generates an image given a sample of random noise.
@@ -95,15 +95,15 @@ class CycleGenerator(nn.Module):
         ###########################################
 
         # 1. Define the encoder part of the generator (that extracts features from the input image)
-        # self.conv1 = conv(...)
-        # self.conv2 = conv(...)
+        self.conv1 = conv(3, conv_dim, 4)
+        self.conv2 = conv(conv_dim, conv_dim*2, 4)
 
         # 2. Define the transformation part of the generator
-        # self.resnet_block = ...
+        self.resnet_block = ResnetBlock(conv_dim*2)
 
         # 3. Define the decoder part of the generator (that builds up the output image from features)
-        # self.deconv1 = deconv(...)
-        # self.deconv2 = deconv(...)
+        self.deconv1 = deconv(conv_dim*2, conv_dim, 4)
+        self.deconv2 = deconv(conv_dim, 3, 4, batch_norm = False)
 
     def forward(self, x):
         """Generates an image conditioned on an input image.
@@ -139,13 +139,10 @@ class DCDiscriminator(nn.Module):
         ##   FILL THIS IN: CREATE ARCHITECTURE   ##
         ###########################################
         
-        #conv(in_channels, out_channels, kernel_size, stride=2, padding=1, batch_norm=True, init_zero_weights=False):
-    
-
-        self.conv1 = conv(3, 64, padding = 1)
-        self.conv2 = conv(64, 128, padding = 1)
-        self.conv3 = conv(128,256,padding = 1)
-        self.conv4 = conv(256,1, batch_norm = False)
+        self.conv1 = conv(3, conv_dim, 4,padding = 1)
+        self.conv2 = conv(conv_dim, conv_dim*2, 4, padding = 1)
+        self.conv3 = conv(conv_dim*2,conv_dim*4, 4, padding = 1)
+        self.conv4 = conv(conv_dim*4,1,  4, padding = 0, batch_norm = False)
 
     def forward(self, x):
 
